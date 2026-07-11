@@ -9,23 +9,70 @@ import {
 
 function App() {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const score = 82;
   const vulnerabilities = 5;
   const licenseIssues = 2;
   const dependencies = 50;
 
+  const handleAnalyze = () => {
+    if (!selectedFile) {
+      alert("Please select an SBOM file");
+      return;
+    }
+
+    setIsAnalyzing(true);
+
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      alert("SBOM Analysis Completed!");
+    }, 2000);
+  };
+
+  const cards = [
+    {
+      key: "security",
+      icon: <FaShieldAlt size={28} color="#38bdf8" />,
+      title: "Security Score",
+      value: score,
+    },
+    {
+      key: "vuln",
+      icon: <FaBug size={28} color="#38bdf8" />,
+      title: "Vulnerabilities",
+      value: vulnerabilities,
+    },
+    {
+      key: "license",
+      icon: <FaFileContract size={28} color="#38bdf8" />,
+      title: "License Issues",
+      value: licenseIssues,
+    },
+    {
+      key: "dep",
+      icon: <FaProjectDiagram size={28} color="#38bdf8" />,
+      title: "Dependencies",
+      value: dependencies,
+    },
+  ];
+
   return (
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.logoRow}>
-          <FaShieldAlt size={40} color="#38bdf8" />
+          <FaShieldAlt size={42} color="#38bdf8" />
 
           <div>
-            <h1 style={styles.title}>SBOM Sentinel</h1>
+            <h1 style={styles.title}>
+              SBOM Sentinel
+            </h1>
+
             <p style={styles.subtitle}>
-              Software Supply Chain Risk Analyzer
+              Software Supply Chain Risk
+              Analyzer
             </p>
           </div>
         </div>
@@ -33,9 +80,14 @@ function App() {
 
       {/* Upload Section */}
       <div style={styles.uploadCard}>
-        <FaUpload size={30} color="#38bdf8" />
+        <FaUpload
+          size={32}
+          color="#38bdf8"
+        />
 
-        <h2 style={styles.uploadTitle}>Upload SBOM</h2>
+        <h2 style={styles.uploadTitle}>
+          Upload SBOM
+        </h2>
 
         <p style={styles.uploadText}>
           Upload CycloneDX or SPDX files
@@ -45,42 +97,42 @@ function App() {
           type="file"
           accept=".json,.xml,.csv"
           style={styles.fileInput}
+          onChange={(e) =>
+            setSelectedFile(
+              e.target.files[0]
+            )
+          }
         />
+
+        {selectedFile && (
+          <p style={styles.fileName}>
+            📄 {selectedFile.name}
+          </p>
+        )}
+
+        <button
+          style={styles.button}
+          onClick={handleAnalyze}
+        >
+          Analyze SBOM
+        </button>
+
+        {isAnalyzing && (
+          <p style={styles.analyzing}>
+            Analyzing SBOM...
+          </p>
+        )}
       </div>
 
       {/* Metrics */}
       <div style={styles.metricsGrid}>
-        {[
-          {
-            key: "security",
-            icon: <FaShieldAlt size={28} color="#38bdf8" />,
-            title: "Security Score",
-            value: score,
-          },
-          {
-            key: "vuln",
-            icon: <FaBug size={28} color="#38bdf8" />,
-            title: "Vulnerabilities",
-            value: vulnerabilities,
-          },
-          {
-            key: "license",
-            icon: <FaFileContract size={28} color="#38bdf8" />,
-            title: "License Issues",
-            value: licenseIssues,
-          },
-          {
-            key: "dep",
-            icon: <FaProjectDiagram size={28} color="#38bdf8" />,
-            title: "Dependencies",
-            value: dependencies,
-          },
-        ].map((card) => (
+        {cards.map((card) => (
           <div
             key={card.key}
             style={{
               ...styles.metricCard,
-              ...(hoveredCard === card.key
+              ...(hoveredCard ===
+              card.key
                 ? styles.cardHover
                 : {}),
             }}
@@ -92,9 +144,11 @@ function App() {
             }
           >
             {card.icon}
+
             <p style={styles.metricTitle}>
               {card.title}
             </p>
+
             <h2 style={styles.metricValue}>
               {card.value}
             </h2>
@@ -110,7 +164,9 @@ function App() {
           </h3>
 
           <div style={styles.scanCard}>
-            <strong>No scan available</strong>
+            <strong>
+              No scan available
+            </strong>
 
             <p style={styles.smallText}>
               Upload an SBOM file to begin
@@ -124,20 +180,30 @@ function App() {
             Recommendations
           </h3>
 
-          <div style={styles.recommendation}>
+          <div
+            style={styles.recommendation}
+          >
             Upgrade vulnerable packages
           </div>
 
-          <div style={styles.recommendation}>
-            Remove incompatible licenses
+          <div
+            style={styles.recommendation}
+          >
+            Remove incompatible
+            licenses
           </div>
 
-          <div style={styles.recommendation}>
-            Update outdated dependencies
+          <div
+            style={styles.recommendation}
+          >
+            Update outdated
+            dependencies
           </div>
 
-          <div style={styles.recommendation}>
-            Apply available security patches
+          <div
+            style={styles.recommendation}
+          >
+            Apply security patches
           </div>
         </div>
       </div>
@@ -148,7 +214,9 @@ function App() {
           Dependency Graph
         </h3>
 
-        <div style={styles.graphContainer}>
+        <div
+          style={styles.graphContainer}
+        >
           <div style={styles.mainNode}>
             SBOM Sentinel
           </div>
@@ -156,15 +224,21 @@ function App() {
           <div style={styles.line}></div>
 
           <div style={styles.graphRow}>
-            <div style={styles.graphNode}>
+            <div
+              style={styles.graphNode}
+            >
               Frontend
             </div>
 
-            <div style={styles.graphNode}>
+            <div
+              style={styles.graphNode}
+            >
               Backend
             </div>
 
-            <div style={styles.graphNode}>
+            <div
+              style={styles.graphNode}
+            >
               Vulnerability DB
             </div>
           </div>
@@ -207,7 +281,7 @@ const styles = {
   },
 
   header: {
-    marginBottom: "32px",
+    marginBottom: "30px",
   },
 
   logoRow: {
@@ -218,12 +292,13 @@ const styles = {
 
   title: {
     margin: 0,
-    fontSize: "32px",
+    fontSize: "34px",
     fontWeight: "700",
+    color: "#ffffff",
   },
 
   subtitle: {
-    margin: "4px 0 0",
+    margin: "5px 0 0",
     color: "#94a3b8",
   },
 
@@ -231,23 +306,42 @@ const styles = {
     background: "#111827",
     border: "2px dashed #334155",
     borderRadius: "16px",
-    padding: "40px",
+    padding: "35px",
     textAlign: "center",
     marginBottom: "24px",
   },
 
   uploadTitle: {
     color: "#ffffff",
-    marginTop: "12px",
   },
 
   uploadText: {
     color: "#94a3b8",
-    marginBottom: "20px",
   },
 
   fileInput: {
     color: "#ffffff",
+  },
+
+  fileName: {
+    marginTop: "12px",
+    color: "#ffffff",
+  },
+
+  button: {
+    marginTop: "16px",
+    padding: "10px 20px",
+    background: "#38bdf8",
+    color: "#0f172a",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+
+  analyzing: {
+    marginTop: "15px",
+    color: "#38bdf8",
   },
 
   metricsGrid: {
@@ -264,8 +358,8 @@ const styles = {
     borderRadius: "16px",
     padding: "24px",
     textAlign: "center",
+    transition: "0.2s",
     cursor: "pointer",
-    transition: "all 0.2s ease",
   },
 
   cardHover: {
@@ -279,10 +373,10 @@ const styles = {
   },
 
   metricValue: {
-    margin: 0,
-    fontSize: "36px",
-    fontWeight: "700",
     color: "#ffffff",
+    fontSize: "42px",
+    fontWeight: "700",
+    margin: 0,
   },
 
   panelGrid: {
@@ -302,13 +396,13 @@ const styles = {
 
   panelTitle: {
     marginTop: 0,
-    marginBottom: "16px",
+    color: "#ffffff",
   },
 
   scanCard: {
     background: "#0f172a",
     border: "1px solid #1f2937",
-    borderRadius: "12px",
+    borderRadius: "10px",
     padding: "16px",
   },
 
@@ -318,7 +412,8 @@ const styles = {
 
   recommendation: {
     background: "#0f172a",
-    borderLeft: "3px solid #38bdf8",
+    borderLeft:
+      "3px solid #38bdf8",
     padding: "12px",
     marginBottom: "10px",
     borderRadius: "8px",
@@ -356,7 +451,7 @@ const styles = {
 
   graphRow: {
     display: "flex",
-    gap: "16px",
+    gap: "15px",
     flexWrap: "wrap",
     justifyContent: "center",
   },
