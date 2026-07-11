@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboardData } from "./api";
+import { FaShieldAlt, FaBug, FaFileContract, FaProjectDiagram } from "react-icons/fa";
 
 function App() {
   const [score, setScore] = useState(82);
