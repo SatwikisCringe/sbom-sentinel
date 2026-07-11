@@ -1,3 +1,4 @@
+from services.file_parser import parse_file
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -54,7 +55,12 @@ async def upload_file(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    # Parse the uploaded file
+    parsed_data = parse_file(file_path)
+
     return {
         "message": "File uploaded successfully!",
-        "filename": file.filename
+        "filename": file.filename,
+        "rows": len(parsed_data),
+        "preview": parsed_data[:5]
     }
