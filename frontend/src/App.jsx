@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   FaShieldAlt,
   FaBug,
   FaFileContract,
   FaProjectDiagram,
+  FaUpload,
 } from "react-icons/fa";
 
 function App() {
-  const [score, setScore] = useState(82);
-  const [vulnerabilities, setVulnerabilities] = useState(5);
-  const [licenseIssues, setLicenseIssues] = useState(2);
-  const [dependencies, setDependencies] = useState(50);
   const [hoveredCard, setHoveredCard] = useState(null);
 
-  useEffect(() => {
-    // Replace with backend API later
-    setScore(82);
-    setVulnerabilities(5);
-    setLicenseIssues(2);
-    setDependencies(50);
-  }, []);
+  const score = 82;
+  const vulnerabilities = 5;
+  const licenseIssues = 2;
+  const dependencies = 50;
 
   return (
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <div style={styles.logoContainer}>
-          <FaShieldAlt size={70} />
-          <h1 style={styles.title}>SBOM Sentinel</h1>
-        </div>
+        <div style={styles.logoRow}>
+          <FaShieldAlt size={40} color="#38bdf8" />
 
-        <p style={styles.subtitle}>
-          Software Supply Chain Risk Analyzer
-        </p>
+          <div>
+            <h1 style={styles.title}>SBOM Sentinel</h1>
+            <p style={styles.subtitle}>
+              Software Supply Chain Risk Analyzer
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Upload Section */}
       <div style={styles.uploadCard}>
-        <h2 style={styles.uploadTitle}>
-          📂 Upload SBOM
-        </h2>
+        <FaUpload size={30} color="#38bdf8" />
+
+        <h2 style={styles.uploadTitle}>Upload SBOM</h2>
+
+        <p style={styles.uploadText}>
+          Upload CycloneDX or SPDX files
+        </p>
 
         <input
           type="file"
@@ -48,143 +48,148 @@ function App() {
         />
       </div>
 
-      {/* Metric Cards */}
+      {/* Metrics */}
       <div style={styles.metricsGrid}>
-        {/* Security */}
-        <div
-          style={{
-            ...styles.metricCard,
-            ...styles.securityCard,
-            ...(hoveredCard === "security"
-              ? styles.cardHover
-              : {}),
-          }}
-          onMouseEnter={() =>
-            setHoveredCard("security")
-          }
-          onMouseLeave={() =>
-            setHoveredCard(null)
-          }
-        >
-          <FaShieldAlt size={60} />
-          <h3 style={styles.metricTitle}>
-            Security Score
-          </h3>
-          <h1 style={styles.metricValue}>
-            {score}
-          </h1>
-        </div>
-
-        {/* Vulnerabilities */}
-        <div
-          style={{
-            ...styles.metricCard,
-            ...styles.vulnerabilityCard,
-            ...(hoveredCard === "vulnerability"
-              ? styles.cardHover
-              : {}),
-          }}
-          onMouseEnter={() =>
-            setHoveredCard("vulnerability")
-          }
-          onMouseLeave={() =>
-            setHoveredCard(null)
-          }
-        >
-          <FaBug size={60} />
-          <h3 style={styles.metricTitle}>
-            Vulnerabilities
-          </h3>
-          <h1 style={styles.metricValue}>
-            {vulnerabilities}
-          </h1>
-        </div>
-
-        {/* License */}
-        <div
-          style={{
-            ...styles.metricCard,
-            ...styles.licenseCard,
-            ...(hoveredCard === "license"
-              ? styles.cardHover
-              : {}),
-          }}
-          onMouseEnter={() =>
-            setHoveredCard("license")
-          }
-          onMouseLeave={() =>
-            setHoveredCard(null)
-          }
-        >
-          <FaFileContract size={60} />
-          <h3 style={styles.metricTitle}>
-            License Issues
-          </h3>
-          <h1 style={styles.metricValue}>
-            {licenseIssues}
-          </h1>
-        </div>
-
-        {/* Dependencies */}
-        <div
-          style={{
-            ...styles.metricCard,
-            ...styles.dependencyCard,
-            ...(hoveredCard === "dependency"
-              ? styles.cardHover
-              : {}),
-          }}
-          onMouseEnter={() =>
-            setHoveredCard("dependency")
-          }
-          onMouseLeave={() =>
-            setHoveredCard(null)
-          }
-        >
-          <FaProjectDiagram size={60} />
-          <h3 style={styles.metricTitle}>
-            Dependencies
-          </h3>
-          <h1 style={styles.metricValue}>
-            {dependencies}
-          </h1>
-        </div>
+        {[
+          {
+            key: "security",
+            icon: <FaShieldAlt size={28} color="#38bdf8" />,
+            title: "Security Score",
+            value: score,
+          },
+          {
+            key: "vuln",
+            icon: <FaBug size={28} color="#38bdf8" />,
+            title: "Vulnerabilities",
+            value: vulnerabilities,
+          },
+          {
+            key: "license",
+            icon: <FaFileContract size={28} color="#38bdf8" />,
+            title: "License Issues",
+            value: licenseIssues,
+          },
+          {
+            key: "dep",
+            icon: <FaProjectDiagram size={28} color="#38bdf8" />,
+            title: "Dependencies",
+            value: dependencies,
+          },
+        ].map((card) => (
+          <div
+            key={card.key}
+            style={{
+              ...styles.metricCard,
+              ...(hoveredCard === card.key
+                ? styles.cardHover
+                : {}),
+            }}
+            onMouseEnter={() =>
+              setHoveredCard(card.key)
+            }
+            onMouseLeave={() =>
+              setHoveredCard(null)
+            }
+          >
+            {card.icon}
+            <p style={styles.metricTitle}>
+              {card.title}
+            </p>
+            <h2 style={styles.metricValue}>
+              {card.value}
+            </h2>
+          </div>
+        ))}
       </div>
 
-      {/* Bottom Panels */}
-      <div style={styles.contentGrid}>
+      {/* Panels */}
+      <div style={styles.panelGrid}>
         <div style={styles.panel}>
-          <h2 style={styles.panelTitle}>
-            📊 Recent Scan
-          </h2>
+          <h3 style={styles.panelTitle}>
+            Recent Scan
+          </h3>
 
-          <p style={styles.text}>
-            Waiting for SBOM upload...
-          </p>
+          <div style={styles.scanCard}>
+            <strong>No scan available</strong>
+
+            <p style={styles.smallText}>
+              Upload an SBOM file to begin
+              analysis.
+            </p>
+          </div>
         </div>
 
         <div style={styles.panel}>
-          <h2 style={styles.panelTitle}>
-            🤖 AI Recommendations
-          </h2>
+          <h3 style={styles.panelTitle}>
+            Recommendations
+          </h3>
 
-          <ul style={styles.list}>
-            <li>Upgrade vulnerable packages</li>
-            <li>Remove incompatible licenses</li>
-            <li>Update outdated dependencies</li>
-            <li>Apply available security patches</li>
-          </ul>
+          <div style={styles.recommendation}>
+            Upgrade vulnerable packages
+          </div>
+
+          <div style={styles.recommendation}>
+            Remove incompatible licenses
+          </div>
+
+          <div style={styles.recommendation}>
+            Update outdated dependencies
+          </div>
+
+          <div style={styles.recommendation}>
+            Apply available security patches
+          </div>
         </div>
       </div>
 
       {/* Dependency Graph */}
       <div style={styles.graphPanel}>
-        <h2 style={styles.panelTitle}>
-          🔗 Dependency Graph
-        </h2>
+        <h3 style={styles.panelTitle}>
+          Dependency Graph
+        </h3>
 
-        <div style={styles.graphPlaceholder}>
-          Graph Visualization Coming Soon
+        <div style={styles.graphContainer}>
+          <div style={styles.mainNode}>
+            SBOM Sentinel
+          </div>
+
+          <div style={styles.line}></div>
+
+          <div style={styles.graphRow}>
+            <div style={styles.graphNode}>
+              Frontend
+            </div>
+
+            <div style={styles.graphNode}>
+              Backend
+            </div>
+
+            <div style={styles.graphNode}>
+              Vulnerability DB
+            </div>
+          </div>
+
+          <div style={styles.graphRow}>
+            <div style={styles.depNode}>
+              React
+            </div>
+
+            <div style={styles.depNode}>
+              Axios
+            </div>
+
+            <div style={styles.depNode}>
+              Flask
+            </div>
+
+            <div style={styles.depNode}>
+              SQLite
+            </div>
+
+            <div style={styles.depNode}>
+              NVD Feed
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -194,174 +199,181 @@ function App() {
 const styles = {
   container: {
     minHeight: "100vh",
-    padding: "30px",
-    color: "#fff",
-    fontFamily: "Segoe UI, sans-serif",
-    background:
-      "linear-gradient(135deg, #020617, #0f172a)",
+    background: "#0f172a",
+    color: "#ffffff",
+    padding: "32px",
+    fontFamily:
+      "Inter, Segoe UI, sans-serif",
   },
 
   header: {
-    textAlign: "center",
-    marginBottom: "35px",
+    marginBottom: "32px",
   },
 
-  logoContainer: {
+  logoRow: {
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
-    gap: "15px",
-    color: "#38bdf8",
+    gap: "14px",
   },
 
   title: {
-    fontSize: "56px",
-    fontWeight: "800",
     margin: 0,
-    color: "#38bdf8",
-    textShadow:
-      "0 0 15px rgba(56,189,248,0.6)",
+    fontSize: "32px",
+    fontWeight: "700",
   },
 
   subtitle: {
-    marginTop: "10px",
-    fontSize: "22px",
-    color: "#cbd5e1",
+    margin: "4px 0 0",
+    color: "#94a3b8",
   },
 
   uploadCard: {
-    background: "#1e293b",
-    padding: "35px",
-    borderRadius: "24px",
+    background: "#111827",
+    border: "2px dashed #334155",
+    borderRadius: "16px",
+    padding: "40px",
     textAlign: "center",
-    marginBottom: "30px",
-    boxShadow:
-      "0 0 25px rgba(56,189,248,0.15)",
+    marginBottom: "24px",
   },
 
- uploadTitle: {
-  fontSize: "36px",
-  marginBottom: "20px",
-  color: "#38bdf8",
-  fontWeight: "700",
-  textShadow: "0 0 12px rgba(56,189,248,0.6)",
-},
+  uploadTitle: {
+    color: "#ffffff",
+    marginTop: "12px",
+  },
+
+  uploadText: {
+    color: "#94a3b8",
+    marginBottom: "20px",
+  },
 
   fileInput: {
-    color: "#fff",
-    fontSize: "16px",
+    color: "#ffffff",
   },
 
   metricsGrid: {
     display: "grid",
     gridTemplateColumns:
-      "repeat(auto-fit,minmax(240px,1fr))",
-    gap: "25px",
-    marginBottom: "30px",
+      "repeat(auto-fit,minmax(220px,1fr))",
+    gap: "20px",
+    marginBottom: "24px",
   },
 
   metricCard: {
-    padding: "30px",
-    borderRadius: "24px",
+    background: "#111827",
+    border: "1px solid #1f2937",
+    borderRadius: "16px",
+    padding: "24px",
     textAlign: "center",
     cursor: "pointer",
-    transition: "all 0.35s ease",
-    boxShadow:
-      "0 12px 25px rgba(0,0,0,0.35)",
-    color: "#fff",
+    transition: "all 0.2s ease",
   },
 
   cardHover: {
-    transform: "translateY(-10px) scale(1.05)",
-    boxShadow:
-      "0 0 35px rgba(255,255,255,0.25)",
-  },
-
-  securityCard: {
-    background:
-      "linear-gradient(135deg,#00c853,#00e676)",
-  },
-
-  vulnerabilityCard: {
-    background:
-      "linear-gradient(135deg,#ff1744,#ff5252)",
-  },
-
-  licenseCard: {
-    background:
-      "linear-gradient(135deg,#ff9100,#ffab40)",
-  },
-
-  dependencyCard: {
-    background:
-      "linear-gradient(135deg,#2979ff,#448aff)",
+    transform: "translateY(-4px)",
+    border: "1px solid #38bdf8",
   },
 
   metricTitle: {
-    marginTop: "15px",
-    marginBottom: "10px",
-    fontSize: "28px",
-    fontWeight: "600",
-    color: "#ffffff",
+    color: "#94a3b8",
+    marginTop: "12px",
   },
 
   metricValue: {
     margin: 0,
-    fontSize: "72px",
-    fontWeight: "800",
+    fontSize: "36px",
+    fontWeight: "700",
     color: "#ffffff",
   },
 
-  contentGrid: {
+  panelGrid: {
     display: "grid",
     gridTemplateColumns:
       "repeat(auto-fit,minmax(350px,1fr))",
-    gap: "25px",
-    marginBottom: "25px",
+    gap: "20px",
+    marginBottom: "24px",
   },
 
   panel: {
-    background: "#1e293b",
-    padding: "25px",
-    borderRadius: "24px",
-    boxShadow:
-      "0 0 20px rgba(56,189,248,0.12)",
+    background: "#111827",
+    border: "1px solid #1f2937",
+    borderRadius: "16px",
+    padding: "24px",
   },
 
   panelTitle: {
-    color: "#38bdf8",
-    marginBottom: "15px",
+    marginTop: 0,
+    marginBottom: "16px",
   },
 
-  text: {
-    color: "#cbd5e1",
-    fontSize: "16px",
+  scanCard: {
+    background: "#0f172a",
+    border: "1px solid #1f2937",
+    borderRadius: "12px",
+    padding: "16px",
   },
 
-  list: {
-    color: "#cbd5e1",
-    lineHeight: "2",
-    fontSize: "16px",
+  smallText: {
+    color: "#94a3b8",
+  },
+
+  recommendation: {
+    background: "#0f172a",
+    borderLeft: "3px solid #38bdf8",
+    padding: "12px",
+    marginBottom: "10px",
+    borderRadius: "8px",
   },
 
   graphPanel: {
-    background: "#1e293b",
-    padding: "25px",
-    borderRadius: "24px",
-    boxShadow:
-      "0 0 20px rgba(56,189,248,0.12)",
+    background: "#111827",
+    border: "1px solid #1f2937",
+    borderRadius: "16px",
+    padding: "24px",
   },
 
-  graphPlaceholder: {
-    height: "280px",
-    border: "2px dashed #38bdf8",
-    borderRadius: "16px",
+  graphContainer: {
+    minHeight: "280px",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    color: "#94a3b8",
-    fontSize: "22px",
-    marginTop: "15px",
+    gap: "20px",
+  },
+
+  mainNode: {
+    background: "#38bdf8",
+    color: "#0f172a",
+    padding: "12px 24px",
+    borderRadius: "10px",
+    fontWeight: "700",
+  },
+
+  line: {
+    width: "2px",
+    height: "30px",
+    background: "#475569",
+  },
+
+  graphRow: {
+    display: "flex",
+    gap: "16px",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+
+  graphNode: {
+    background: "#1e293b",
+    border: "1px solid #334155",
+    padding: "10px 20px",
+    borderRadius: "10px",
+  },
+
+  depNode: {
+    background: "#0f172a",
+    border: "1px solid #1f2937",
+    padding: "8px 16px",
+    borderRadius: "8px",
+    color: "#cbd5e1",
   },
 };
 
