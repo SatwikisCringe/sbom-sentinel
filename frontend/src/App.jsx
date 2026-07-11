@@ -239,10 +239,13 @@ const styles = {
       "0 0 25px rgba(56,189,248,0.15)",
   },
 
-  uploadTitle: {
-    fontSize: "36px",
-    marginBottom: "20px",
-  },
+ uploadTitle: {
+  fontSize: "36px",
+  marginBottom: "20px",
+  color: "#38bdf8",
+  fontWeight: "700",
+  textShadow: "0 0 12px rgba(56,189,248,0.6)",
+},
 
   fileInput: {
     color: "#fff",
