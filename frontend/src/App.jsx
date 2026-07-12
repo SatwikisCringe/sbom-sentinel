@@ -1,475 +1,303 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaShieldAlt,
-  FaBug,
-  FaFileContract,
-  FaProjectDiagram,
-  FaUpload,
-} from "react-icons/fa";
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-function App() {
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+export default function App() {
+  const [dashboard, setDashboard] = useState({
+    security_score: 82,
+    vulnerabilities: 12,
+    license_issues: 3,
+    dependencies: 156,
+  });
 
-  const score = 82;
-  const vulnerabilities = 5;
-  const licenseIssues = 2;
-  const dependencies = 50;
+  const [status, setStatus] = useState("Waiting for analysis...");
+  const [file, setFile] = useState(null);
 
-  const handleAnalyze = () => {
-    if (!selectedFile) {
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/dashboard")
+      .then((res) => res.json())
+      .then((data) => setDashboard(data))
+      .catch(() => console.log("Using demo data"));
+  }, []);
+
+  const handleUpload = async () => {
+    if (!file) {
       alert("Please select an SBOM file");
       return;
     }
 
-    setIsAnalyzing(true);
+    const formData = new FormData();
+    formData.append("file", file);
 
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      alert("SBOM Analysis Completed!");
-    }, 2000);
+    try {
+      setStatus("Analyzing SBOM...");
+
+      await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/dashboard"
+      );
+
+      const data = await response.json();
+
+      setDashboard(data);
+      setStatus("Analysis completed successfully");
+    } catch (error) {
+      setStatus("Backend not connected");
+    }
   };
 
-  const cards = [
-    {
-      key: "security",
-      icon: <FaShieldAlt size={28} color="#38bdf8" />,
-      title: "Security Score",
-      value: score,
-    },
-    {
-      key: "vuln",
-      icon: <FaBug size={28} color="#38bdf8" />,
-      title: "Vulnerabilities",
-      value: vulnerabilities,
-    },
-    {
-      key: "license",
-      icon: <FaFileContract size={28} color="#38bdf8" />,
-      title: "License Issues",
-      value: licenseIssues,
-    },
-    {
-      key: "dep",
-      icon: <FaProjectDiagram size={28} color="#38bdf8" />,
-      title: "Dependencies",
-      value: dependencies,
-    },
+  const graphData = [
+    { name: "Critical", value: 4 },
+    { name: "High", value: 5 },
+    { name: "Medium", value: 2 },
+    { name: "Low", value: 1 },
   ];
 
+  const COLORS = [
+    "#ef4444",
+    "#f97316",
+    "#eab308",
+    "#22c55e",
+  ];
+
+  const cardStyle = {
+    background: "#111827",
+    border: "1px solid #1f2937",
+    borderRadius: "12px",
+    padding: "24px",
+  };
+
   return (
-    <div style={styles.container}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0b0f14",
+        color: "#ffffff",
+        padding: "40px",
+        fontFamily: "Inter, Segoe UI, sans-serif",
+      }}
+    >
       {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.logoRow}>
-          <FaShieldAlt size={42} color="#38bdf8" />
+      <div style={{ marginBottom: "35px" }}>
+        <h1
+          style={{
+            color: "#ffffff",
+            fontSize: "40px",
+            margin: 0,
+            fontWeight: "700",
+          }}
+        >
+          SBOM Sentinel
+        </h1>
 
-          <div>
-            <h1 style={styles.title}>
-              SBOM Sentinel
-            </h1>
-
-            <p style={styles.subtitle}>
-              Software Supply Chain Risk
-              Analyzer
-            </p>
-          </div>
-        </div>
+        <p
+          style={{
+            color: "#9ca3af",
+            marginTop: "8px",
+          }}
+        >
+          Software Supply Chain Risk Analysis Platform
+        </p>
       </div>
 
       {/* Upload Section */}
-      <div style={styles.uploadCard}>
-        <FaUpload
-          size={32}
-          color="#38bdf8"
-        />
-
-        <h2 style={styles.uploadTitle}>
+      <div
+        style={{
+          ...cardStyle,
+          marginBottom: "24px",
+        }}
+      >
+        <h2 style={{ color: "#ffffff" }}>
           Upload SBOM
         </h2>
 
-        <p style={styles.uploadText}>
-          Upload CycloneDX or SPDX files
-        </p>
-
-        <input
-          type="file"
-          accept=".json,.xml,.csv"
-          style={styles.fileInput}
-          onChange={(e) =>
-            setSelectedFile(
-              e.target.files[0]
-            )
-          }
-        />
-
-        {selectedFile && (
-          <p style={styles.fileName}>
-            📄 {selectedFile.name}
-          </p>
-        )}
-
-        <button
-          style={styles.button}
-          onClick={handleAnalyze}
+        <div
+          style={{
+            border: "1px dashed #374151",
+            borderRadius: "10px",
+            padding: "40px",
+            textAlign: "center",
+            color: "#ffffff",
+          }}
         >
-          Analyze SBOM
-        </button>
-
-        {isAnalyzing && (
-          <p style={styles.analyzing}>
-            Analyzing SBOM...
+          <p>
+            Drop your SBOM file here or browse manually
           </p>
-        )}
+
+          <input
+            type="file"
+            onChange={(e) =>
+              setFile(e.target.files[0])
+            }
+            style={{
+              color: "#ffffff",
+              marginTop: "10px",
+            }}
+          />
+
+          <br />
+
+          <button
+            onClick={handleUpload}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              background: "#111827",
+              color: "#ffffff",
+              border: "1px solid #374151",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Analyze
+          </button>
+        </div>
       </div>
 
       {/* Metrics */}
-      <div style={styles.metricsGrid}>
-        {cards.map((card) => (
-          <div
-            key={card.key}
-            style={{
-              ...styles.metricCard,
-              ...(hoveredCard ===
-              card.key
-                ? styles.cardHover
-                : {}),
-            }}
-            onMouseEnter={() =>
-              setHoveredCard(card.key)
-            }
-            onMouseLeave={() =>
-              setHoveredCard(null)
-            }
-          >
-            {card.icon}
-
-            <p style={styles.metricTitle}>
-              {card.title}
-            </p>
-
-            <h2 style={styles.metricValue}>
-              {card.value}
-            </h2>
-          </div>
-        ))}
-      </div>
-
-      {/* Panels */}
-      <div style={styles.panelGrid}>
-        <div style={styles.panel}>
-          <h3 style={styles.panelTitle}>
-            Recent Scan
-          </h3>
-
-          <div style={styles.scanCard}>
-            <strong>
-              No scan available
-            </strong>
-
-            <p style={styles.smallText}>
-              Upload an SBOM file to begin
-              analysis.
-            </p>
-          </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit,minmax(220px,1fr))",
+          gap: "16px",
+          marginBottom: "24px",
+        }}
+      >
+        <div style={cardStyle}>
+          <p style={{ color: "#9ca3af" }}>
+            Security Score
+          </p>
+          <h2 style={{ color: "#ffffff" }}>
+            {dashboard.security_score}
+          </h2>
         </div>
 
-        <div style={styles.panel}>
-          <h3 style={styles.panelTitle}>
-            Recommendations
-          </h3>
+        <div style={cardStyle}>
+          <p style={{ color: "#9ca3af" }}>
+            Vulnerabilities
+          </p>
+          <h2 style={{ color: "#ffffff" }}>
+            {dashboard.vulnerabilities}
+          </h2>
+        </div>
 
-          <div
-            style={styles.recommendation}
-          >
-            Upgrade vulnerable packages
-          </div>
+        <div style={cardStyle}>
+          <p style={{ color: "#9ca3af" }}>
+            License Issues
+          </p>
+          <h2 style={{ color: "#ffffff" }}>
+            {dashboard.license_issues}
+          </h2>
+        </div>
 
-          <div
-            style={styles.recommendation}
-          >
-            Remove incompatible
-            licenses
-          </div>
+        <div style={cardStyle}>
+          <p style={{ color: "#9ca3af" }}>
+            Dependencies
+          </p>
+          <h2 style={{ color: "#ffffff" }}>
+            {dashboard.dependencies}
+          </h2>
+        </div>
+      </div>
 
-          <div
-            style={styles.recommendation}
-          >
-            Update outdated
-            dependencies
-          </div>
+      {/* Graph + Analysis */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "20px",
+          marginBottom: "24px",
+        }}
+      >
+        <div style={cardStyle}>
+          <h2 style={{ color: "#ffffff" }}>
+            Risk Distribution
+          </h2>
 
-          <div
-            style={styles.recommendation}
+          <ResponsiveContainer
+            width="100%"
+            height={260}
           >
-            Apply security patches
-          </div>
+            <PieChart>
+              <Pie
+                data={graphData}
+                dataKey="value"
+                outerRadius={90}
+                label
+              >
+                {graphData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={COLORS[index]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div style={cardStyle}>
+          <h2 style={{ color: "#ffffff" }}>
+            Recent Analysis
+          </h2>
+
+          <p style={{ color: "#9ca3af" }}>
+            {status}
+          </p>
+
+          <ul
+            style={{
+              color: "#d1d5db",
+              lineHeight: "2",
+            }}
+          >
+            <li>
+              Critical vulnerabilities detected
+            </li>
+            <li>
+              License compliance issues found
+            </li>
+            <li>
+              Dependency health evaluated
+            </li>
+            <li>
+              Risk score calculated
+            </li>
+          </ul>
         </div>
       </div>
 
       {/* Dependency Graph */}
-      <div style={styles.graphPanel}>
-        <h3 style={styles.panelTitle}>
+      <div style={cardStyle}>
+        <h2 style={{ color: "#ffffff" }}>
           Dependency Graph
-        </h3>
+        </h2>
 
         <div
-          style={styles.graphContainer}
+          style={{
+            height: "320px",
+            border: "1px dashed #374151",
+            borderRadius: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#9ca3af",
+          }}
         >
-          <div style={styles.mainNode}>
-            SBOM Sentinel
-          </div>
-
-          <div style={styles.line}></div>
-
-          <div style={styles.graphRow}>
-            <div
-              style={styles.graphNode}
-            >
-              Frontend
-            </div>
-
-            <div
-              style={styles.graphNode}
-            >
-              Backend
-            </div>
-
-            <div
-              style={styles.graphNode}
-            >
-              Vulnerability DB
-            </div>
-          </div>
-
-          <div style={styles.graphRow}>
-            <div style={styles.depNode}>
-              React
-            </div>
-
-            <div style={styles.depNode}>
-              Axios
-            </div>
-
-            <div style={styles.depNode}>
-              Flask
-            </div>
-
-            <div style={styles.depNode}>
-              SQLite
-            </div>
-
-            <div style={styles.depNode}>
-              NVD Feed
-            </div>
-          </div>
+          Backend dependency graph will appear here
         </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "#0f172a",
-    color: "#ffffff",
-    padding: "32px",
-    fontFamily:
-      "Inter, Segoe UI, sans-serif",
-  },
-
-  header: {
-    marginBottom: "30px",
-  },
-
-  logoRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "14px",
-  },
-
-  title: {
-    margin: 0,
-    fontSize: "34px",
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-
-  subtitle: {
-    margin: "5px 0 0",
-    color: "#94a3b8",
-  },
-
-  uploadCard: {
-    background: "#111827",
-    border: "2px dashed #334155",
-    borderRadius: "16px",
-    padding: "35px",
-    textAlign: "center",
-    marginBottom: "24px",
-  },
-
-  uploadTitle: {
-    color: "#ffffff",
-  },
-
-  uploadText: {
-    color: "#94a3b8",
-  },
-
-  fileInput: {
-    color: "#ffffff",
-  },
-
-  fileName: {
-    marginTop: "12px",
-    color: "#ffffff",
-  },
-
-  button: {
-    marginTop: "16px",
-    padding: "10px 20px",
-    background: "#38bdf8",
-    color: "#0f172a",
-    border: "none",
-    borderRadius: "8px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-
-  analyzing: {
-    marginTop: "15px",
-    color: "#38bdf8",
-  },
-
-  metricsGrid: {
-    display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit,minmax(220px,1fr))",
-    gap: "20px",
-    marginBottom: "24px",
-  },
-
-  metricCard: {
-    background: "#111827",
-    border: "1px solid #1f2937",
-    borderRadius: "16px",
-    padding: "24px",
-    textAlign: "center",
-    transition: "0.2s",
-    cursor: "pointer",
-  },
-
-  cardHover: {
-    transform: "translateY(-4px)",
-    border: "1px solid #38bdf8",
-  },
-
-  metricTitle: {
-    color: "#94a3b8",
-    marginTop: "12px",
-  },
-
-  metricValue: {
-    color: "#ffffff",
-    fontSize: "42px",
-    fontWeight: "700",
-    margin: 0,
-  },
-
-  panelGrid: {
-    display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit,minmax(350px,1fr))",
-    gap: "20px",
-    marginBottom: "24px",
-  },
-
-  panel: {
-    background: "#111827",
-    border: "1px solid #1f2937",
-    borderRadius: "16px",
-    padding: "24px",
-  },
-
-  panelTitle: {
-    marginTop: 0,
-    color: "#ffffff",
-  },
-
-  scanCard: {
-    background: "#0f172a",
-    border: "1px solid #1f2937",
-    borderRadius: "10px",
-    padding: "16px",
-  },
-
-  smallText: {
-    color: "#94a3b8",
-  },
-
-  recommendation: {
-    background: "#0f172a",
-    borderLeft:
-      "3px solid #38bdf8",
-    padding: "12px",
-    marginBottom: "10px",
-    borderRadius: "8px",
-  },
-
-  graphPanel: {
-    background: "#111827",
-    border: "1px solid #1f2937",
-    borderRadius: "16px",
-    padding: "24px",
-  },
-
-  graphContainer: {
-    minHeight: "280px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "20px",
-  },
-
-  mainNode: {
-    background: "#38bdf8",
-    color: "#0f172a",
-    padding: "12px 24px",
-    borderRadius: "10px",
-    fontWeight: "700",
-  },
-
-  line: {
-    width: "2px",
-    height: "30px",
-    background: "#475569",
-  },
-
-  graphRow: {
-    display: "flex",
-    gap: "15px",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-
-  graphNode: {
-    background: "#1e293b",
-    border: "1px solid #334155",
-    padding: "10px 20px",
-    borderRadius: "10px",
-  },
-
-  depNode: {
-    background: "#0f172a",
-    border: "1px solid #1f2937",
-    padding: "8px 16px",
-    borderRadius: "8px",
-    color: "#cbd5e1",
-  },
-};
-
-export default App;
