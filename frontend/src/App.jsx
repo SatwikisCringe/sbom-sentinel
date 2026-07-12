@@ -164,6 +164,56 @@ export default function App() {
             Upload an identity events CSV for analysis
           </p>
 
+          <div
+            style={{
+              background: "#1f2937",
+              borderLeft: "4px solid #3b82f6",
+              borderRadius: "8px",
+              padding: "16px",
+              margin: "20px auto",
+              maxWidth: "420px",
+              textAlign: "left",
+              color: "#d1d5db",
+            }}
+          >
+            <h3
+              style={{
+                color: "#ffffff",
+                marginTop: 0,
+                marginBottom: "12px",
+              }}
+            >
+              Supported File Format
+            </h3>
+
+            <p style={{ margin: "0 0 12px" }}>
+              ✓ CSV files only
+            </p>
+
+            <p style={{ margin: "0 0 8px" }}>
+              Required Columns:
+            </p>
+
+            <ul
+              style={{
+                margin: "0 0 12px",
+                paddingLeft: "20px",
+              }}
+            >
+              <li>record_id</li>
+              <li>user_id</li>
+              <li>username</li>
+              <li>is_anomaly</li>
+              <li>anomaly_type</li>
+              <li>severity</li>
+              <li>explanation</li>
+            </ul>
+
+            <p style={{ margin: 0 }}>
+              Only CSV files with the above format are supported.
+            </p>
+          </div>
+
           <input
             type="file"
             accept=".csv"
