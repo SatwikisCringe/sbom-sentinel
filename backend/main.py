@@ -1,15 +1,18 @@
-from fastapi import FastAPI, UploadFile, File
+from services.risk import get_risk_summary
+from services.users import get_users, get_top_risky_users
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
-import shutil
+
+from services.dashboard import (
+    get_dashboard_data,
+    get_recent_alerts,
+)
 
 app = FastAPI(
-    title="SBOM Sentinel",
-    description="Software Supply Chain Risk Analyzer",
+    title="Identity & Access Risk Analyzer",
     version="1.0.0"
 )
 
-# Allow React frontend to talk to FastAPI
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -18,43 +21,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create uploads folder if it doesn't exist
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
 
 @app.get("/")
 def home():
     return {
-        "message": "Welcome to SBOM Sentinel 🚀"
+        "message": "Identity & Access Risk Analyzer Running"
     }
 
 
 @app.get("/health")
 def health():
     return {
-        "status": "Backend Running"
+        "status": "running"
     }
 
 
 @app.get("/dashboard")
 def dashboard():
-    return {
-        "security_score": 82,
-        "vulnerabilities": 5,
-        "license_issues": 2,
-        "dependencies": 50
-    }
+    return get_dashboard_data()
 
 
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+@app.get("/alerts")
+def alerts():
+    return get_recent_alerts()
+@app.get("/users")
+def users():
+    return get_users()
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
 
-    return {
-        "message": "File uploaded successfully!",
-        "filename": file.filename
-    }
+@app.get("/top-users")
+def top_users():
+    return get_top_risky_users()
+
+@app.get("/risk-summary")
+def risk_summary():
+    return get_risk_summary()
