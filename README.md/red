@@ -1,1 +1,223 @@
-hi
+# Identity Risk Sentinel
+
+## Overview
+
+Identity Risk Sentinel is an Identity and Access Risk Analysis Platform that helps security teams analyze enterprise identity event data and detect risky user behavior.
+
+The application allows administrators to upload identity event CSV files, automatically analyze security events, calculate risk metrics, and visualize the overall security posture through an interactive dashboard.
+
+---
+
+## Features
+
+- Upload identity event CSV files
+- Automatic identity risk analysis
+- Total Events monitoring
+- Total Anomalies detection
+- Critical Alert identification
+- High Risk event tracking
+- Risk Distribution visualization
+- Interactive dashboard
+- FastAPI backend APIs
+- React + Vite frontend
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- React
+- Vite
+- Recharts
+- JavaScript
+
+### Backend
+
+- Python
+- FastAPI
+- Uvicorn
+- Pandas
+
+---
+
+## Project Structure
+
+```
+sbom-sentinel/
+│
+├── backend/
+│   ├── services/
+│   ├── uploads/
+│   ├── main.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+│
+└── README.md
+```
+
+---
+
+## Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/SatwikisCringe/sbom-sentinel.git
+```
+
+---
+
+## Backend Setup
+
+```bash
+cd backend
+
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install -r requirements.txt
+
+uvicorn main:app --reload
+```
+
+Backend runs on
+
+```
+http://127.0.0.1:8000
+```
+
+Swagger API
+
+```
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Frontend runs on
+
+```
+http://localhost:5173
+```
+
+---
+
+## API Endpoints
+
+### Upload Identity Events
+
+```
+POST /upload
+```
+
+Uploads an identity events CSV file for analysis.
+
+---
+
+### Dashboard Metrics
+
+```
+GET /dashboard
+```
+
+Returns
+
+- Total Events
+- Total Anomalies
+- Critical Alerts
+- High Risk Events
+- Medium Risk Events
+- Low Risk Events
+
+---
+
+### Health Check
+
+```
+GET /health
+```
+
+---
+
+## Workflow
+
+1. Start Backend
+2. Start Frontend
+3. Upload an Identity Events CSV
+4. Backend analyzes the dataset
+5. Dashboard updates automatically
+6. Risk metrics are displayed
+7. Risk distribution chart is generated
+
+---
+
+## Dashboard
+
+The dashboard displays
+
+- Total Events
+- Total Anomalies
+- Critical Alerts
+- High Risk Events
+- Risk Distribution Pie Chart
+- Recent Analysis Status
+
+---
+
+## Sample Dataset
+
+Supported format
+
+```
+CSV
+```
+
+Example
+
+```
+identity_events_labels.csv
+```
+
+---
+
+## Future Enhancements
+
+- User-level anomaly detection
+- Role-based access analysis
+- Real-time monitoring
+- SIEM integration
+- Azure AD integration
+- Okta integration
+- Downloadable PDF reports
+- Live alerts
+- Historical analytics
+
+---
+
+## Authors
+
+- Satwik K
+- Team Members
+
+---
+
+## License
+
+This project was developed for educational and hackathon purposes.
