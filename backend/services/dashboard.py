@@ -4,28 +4,45 @@ from services.loader import load_identity_events
 def get_dashboard_data():
     df = load_identity_events()
 
-    total_events = len(df)
+    anomaly_mask = (
+        df["is_anomaly"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin(["true", "1", "yes"])
+    )
 
-    anomalies = df[df["is_anomaly"] == True]
+    anomalies = df[anomaly_mask].copy()
 
-    critical = len(anomalies[anomalies["severity"] == "Critical"])
-    high = len(anomalies[anomalies["severity"] == "High"])
-    medium = len(anomalies[anomalies["severity"] == "Medium"])
-    low = len(anomalies[anomalies["severity"] == "Low"])
+    severity = (
+        anomalies["severity"]
+        .fillna("NONE")
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
 
     return {
-        "total_events": total_events,
-        "total_anomalies": len(anomalies),
-        "critical": critical,
-        "high": high,
-        "medium": medium,
-        "low": low
+        "total_events": int(len(df)),
+        "total_anomalies": int(len(anomalies)),
+        "critical": int((severity == "CRITICAL").sum()),
+        "high": int((severity == "HIGH").sum()),
+        "medium": int((severity == "MEDIUM").sum()),
+        "low": int((severity == "LOW").sum()),
     }
 
 
 def get_recent_alerts(limit=10):
     df = load_identity_events()
 
-    alerts = df[df["is_anomaly"] == True]
+    anomaly_mask = (
+        df["is_anomaly"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin(["true", "1", "yes"])
+    )
+
+    alerts = df[anomaly_mask]
 
     return alerts.head(limit).to_dict(orient="records")
