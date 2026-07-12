@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
   PieChart,
   Pie,
   Cell,
@@ -117,6 +124,15 @@ export default function App() {
         fontFamily: "Inter, Segoe UI, sans-serif",
       }}
     >
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0b0f14",
+        color: "#ffffff",
+        padding: "40px",
+        fontFamily: "Inter, Segoe UI, sans-serif",
+      }}
+    >
       {/* Header */}
       <div style={{ marginBottom: "35px" }}>
         <h1
@@ -178,6 +194,21 @@ export default function App() {
 
           <br />
 
+          <button
+            onClick={handleUpload}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              background: "#111827",
+              color: "#ffffff",
+              border: "1px solid #374151",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Analyze
+          </button>
+        </div>
           <button
             onClick={handleUpload}
             style={{
